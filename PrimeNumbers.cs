@@ -8,7 +8,7 @@ namespace PrimeNumbers
 {
     class Program
     {
-        private static int MaxNumOfThread = 8;
+        private static int MaxNumOfThread = 3;
         static bool isPrime(int n)
         {
             if (n == 1) return false;
@@ -37,6 +37,19 @@ namespace PrimeNumbers
 
             Console.WriteLine("Tasks:");
             ans = TaskPrimes(l, r);
+            /*
+            foreach(int i in ans)
+            {
+                Console.WriteLine(i);
+            }
+            */
+            timer.Restart();
+            Console.WriteLine("Time elapsed: {0}", timer.Elapsed);
+            timer.Stop();
+
+
+            Console.WriteLine("ThreadPool:");
+            ans = ThreadPoolPrimes(l, r);
             /*
             foreach(int i in ans)
             {
@@ -111,6 +124,22 @@ namespace PrimeNumbers
             }
             return ans;
         }
+        public static List<int> ThreadPoolPrimes(int l, int r)
+        {
+            List<int> res = new List<int>();
 
+            var resEvent = new ManualResetEvent(false);
+            ThreadPool.QueueUserWorkItem(delegate
+            {
+                for (int i = l; i <= r; i++)
+                {
+                    if (isPrime(i)) res.Add(i);
+                }
+                resEvent.Set();
+            });
+            resEvent.WaitOne();
+
+            return res;
+        }
     }
 }
