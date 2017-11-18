@@ -59,7 +59,7 @@ namespace Hash
                 var stream = File.OpenRead(files[i]);
                 ans += hashFile(stream);
             }
-
+            
             if (folders.Length != 0)
             {
                 for (int i = 0; i < folders.Length; ++i)
@@ -68,6 +68,7 @@ namespace Hash
                     ans += hashFolder[i].Result;
                 }
             }
+            
             return hashString(ans);
         }
         private static string hashString(String path)
