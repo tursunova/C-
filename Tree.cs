@@ -208,28 +208,31 @@ namespace Tree
         public static void Main(string[] args)
         {
             var tree = new BST<int, int>();
-            var tasks = new List<Task>();
-            tasks.Add(new Task(async () =>
+            //var tasks = new List<Task>();
+            var tasksInsert = new List<Task>();
+            var tasksSearch = new List<Task>();
+            var tasksDelete = new List<Task>();
+            tasksInsert.Add(new Task(async () =>
             {
                 await tree.Insert(1, 1);
             }));
-            tasks.Add(new Task(async () =>
+            tasksInsert.Add(new Task(async () =>
             {
                 await tree.Insert(2, 1);
             }));
-            tasks.Add(new Task(async () =>
+            tasksInsert.Add(new Task(async () =>
             {
                 await tree.Insert(1, 5);
             }));
 
-            foreach (var task in tasks)
+            foreach (var task in tasksInsert)
             {
                 task.Start();
             }
-            Task.WaitAll(tasks.ToArray());
+            Task.WaitAll(tasksInsert.ToArray());
             //Thread.Sleep(3000);
-            tasks.Clear();
-            tasks.Add(new Task(async () =>
+            tasksInsert.Clear();
+            tasksSearch.Add(new Task(async () =>
             {
                 Console.WriteLine("nofqafqaf");
                 var node = await tree.Search(2);
@@ -240,13 +243,13 @@ namespace Tree
                 else
                     Console.WriteLine(node.key + " " + node.value);
             }));
-            foreach (var task in tasks)
+            foreach (var task in tasksSearch)
             {
                 task.Start();
             }
-            Task.WaitAll(tasks.ToArray());
+            Task.WaitAll(tasksSearch.ToArray());
             //Thread.Sleep(3000);
-            tasks.Clear();
+            tasksSearch.Clear();
             Thread.Sleep(3000);
 
             tree.Print();
