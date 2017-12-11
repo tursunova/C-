@@ -21,7 +21,7 @@ namespace WebPagesAsync
         {
             if (depth == maxDepth) return;
             //Console.WriteLine(url.Value + "  " + depth);
-            var str = GetLinksAndLength(url.Value);
+            var str = GetPageContent(url.Value);
 
             pages.Add(url.Value, str.Length);
 
@@ -34,30 +34,30 @@ namespace WebPagesAsync
             {
                 tasks.Add(GetPages(new Url(link), depth + 1));
             }
-            
+
             return;
         }
         private List<string> GetLinks(String url, String page)
         {
-            
+
             if (!pages.ContainsKey(url)) return null;
 
             var regex = new Regex(@"<a.*? href=""(?<url>http(s)?[\w\.:?&-_=#/]*)""+?");
             MatchCollection matches = regex.Matches(page);
 
             var links = new List<string>();
-            for (var j = 0; j < matches.Count; j++)
+            for (var i = 0; i < matches.Count; i++)
             {
-                var link = matches[j].Groups["url"].Value;
+                var link = matches[i].Groups["url"].Value;
                 if (!pages.ContainsKey(link) && !links.Contains(link))
                     links.Add(link);
             }
 
             return links;
-            
+
         }
 
-        private String GetLinksAndLength(string url)
+        private String GetPageContent(string url)
         {
             string str;
             using (var client = new WebClient())
