@@ -74,11 +74,11 @@ namespace WebPagesAsync
         public static void Main(string[] args)
         {
 
-            Downloader dl = new Downloader(3);
+            Downloader url = new Downloader(3);
 
-            var task = dl.GetPages(new Url("https://fb.com/"));
+            var task = url.GetPages(new Url("https://fb.com/"));
 
-            foreach (var page in dl.pages)
+            foreach (var page in url.pages)
             {
                 Console.Write(page.Key + " -- " + page.Value + "\n");
             }
