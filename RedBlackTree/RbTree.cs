@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RedBlackTree
 {
@@ -182,6 +180,137 @@ namespace RedBlackTree
             newNode.rightChild = node;
             node.parent = newNode;
         }
+
+        public void Delete(K key)
+        {
+            var currNode = root;
+            while (currNode != null && !currNode.key.Equals(key))
+            {
+                if (currNode.key.CompareTo(key) < 0)
+                    currNode = currNode.leftChild;
+                else
+                    currNode = currNode.rightChild;
+            }
+            if (currNode == null)
+            {
+                return;
+            }
+            var deletedNode = currNode;
+            deletedNode.parent = currNode.parent;
+            if ((deletedNode.leftChild != null) && (deletedNode.rightChild != null)) {
+                deletedNode = currNode.rightChild;
+                while (deletedNode.leftChild != null) {
+                    deletedNode = deletedNode.leftChild;
+                }
+            }
+            RbNode<K, V> node;
+            if (deletedNode.leftChild != null)
+                node = deletedNode.leftChild;
+            else
+                node = deletedNode.rightChild;
+            
+            //node.parent = deletedNode.parent;//?????????????????
+            if (deletedNode.parent != null)
+            {
+                if (deletedNode.parent.leftChild.Equals(deletedNode)) {
+                    deletedNode.parent.leftChild = node;
+                } else {
+                    deletedNode.parent.rightChild = node;
+                }
+            }
+            else
+            {
+                root = node;
+            }
+            if (!deletedNode.Equals(currNode))
+            {
+                currNode.key = deletedNode.key;
+                currNode.value = deletedNode.value;
+            }
+            if (deletedNode.color == Color.black)
+            {
+                if (node != null)
+                {
+                    FixDelete(node);
+                }
+                else if (root != null)
+                {
+                    FixDelete(deletedNode, true);
+              }
+            }
+            return;
+        }
+
+        private void FixDelete(RbNode<K,V> node, Boolean isNull = false)
+        {
+            var x = isNull;
+            var currNode = node;
+            while (x || !currNode.Equals(root) && currNode.color == Color.black)
+            {
+                if (currNode.parent.leftChild.Equals(currNode) || currNode.parent.leftChild == null) {
+                    var brotherNode = currNode.parent.rightChild;
+                    if (brotherNode.color == Color.red) {
+
+                        brotherNode.color = Color.black;
+                        currNode.parent.color = Color.red;
+                        LeftRotation(currNode.parent);
+                        brotherNode = currNode.parent.rightChild;
+                    }
+                    if (!(brotherNode.leftChild != null &&
+                            brotherNode.rightChild != null &&
+                            brotherNode.rightChild.color == Color.red &&
+                            brotherNode.leftChild.color == Color.red)) {
+                        brotherNode.color = Color.red;
+                        currNode = currNode.parent;
+                    }
+                    else
+                    {
+                        if (brotherNode.leftChild != null && brotherNode.leftChild.color == Color.red) {
+                            brotherNode.leftChild.color = Color.black;
+                            brotherNode.color = Color.red;
+                            RightRotation(brotherNode);
+                        }
+                        brotherNode.color = currNode.parent.color;
+                        currNode.parent.color = Color.black;
+                        brotherNode.rightChild.color = Color.black;
+                        LeftRotation(currNode.parent);
+                        currNode = root;
+                    }
+                }
+                else
+                {
+                    var brotherNode = currNode.parent.leftChild;
+                    if (brotherNode.color == Color.red) {
+                        brotherNode.color = Color.black;
+                        currNode.parent.color = Color.red;
+                        RightRotation(currNode.parent);
+                        brotherNode = currNode.parent.leftChild;
+                    }
+                    if (!(brotherNode.leftChild != null &&
+                            brotherNode.rightChild != null &&
+                            brotherNode.rightChild.color == Color.red &&
+                            brotherNode.leftChild.color == Color.red)) {
+                        brotherNode.color = Color.red;
+                        currNode = currNode.parent;
+                    } else {
+                        if (brotherNode.rightChild != null && brotherNode.rightChild.color == Color.red) {
+                            brotherNode.rightChild.color = Color.black;
+                            brotherNode.color = Color.red;
+                            LeftRotation(brotherNode);
+                        }
+                        brotherNode.color = currNode.parent.color;
+                        currNode.parent.color = Color.black;
+                        brotherNode.leftChild.color = Color.black;
+                        RightRotation(currNode.parent);
+                        currNode = root;
+                    }
+                }
+                x = false;
+            }
+            currNode.color = Color.black;
+        }
+
+
         public void Print()
         {
             Queue<RbNode<K, V>> q = new Queue<RbNode<K, V>>();
