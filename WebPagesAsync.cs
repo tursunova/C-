@@ -36,7 +36,6 @@ namespace WebPagesAsync
                 //Console.WriteLine(link);
                 tasks.Add(GetPages(new Uri(link), depth + 1));
             }
-            //await Task.WhenAll(tasks.ToArray());
             return;
         }
         private List<string> GetLinks(Uri uri)
