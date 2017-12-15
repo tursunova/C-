@@ -17,42 +17,38 @@ namespace WebPagesAsync
             maxDepth = maxValueofDepth;
         }
 
-        public async Task GetPages(Url url, int depth = 0)
+        public async Task GetPages(Uri uri, int depth = 0)
         {
             if (depth == maxDepth) return;
-            //Console.WriteLine(url.Value + "  " + depth);
-            var str = GetPageContent(url.Value);
+            //Console.WriteLine(uri.ToString());
+            var str = GetPageContent(uri.ToString());
 
-            pages.Add(url.Value, str.Length);
+            //pages.Add(url.Value, str.Length);
+            Console.WriteLine(uri.ToString() + " -- "+ str.Length + " | " + depth);
 
             List<String> links = new List<String>();
             List<Task> tasks = new List<Task>();
 
-            links = GetLinks(url.Value, str);
+            links = GetLinks(uri);
 
             foreach (var link in links)
             {
-                tasks.Add(GetPages(new Url(link), depth + 1));
+                //Console.WriteLine(link);
+                tasks.Add(GetPages(new Uri(link), depth + 1));
             }
-
+            //await Task.WhenAll(tasks.ToArray());
             return;
         }
-        private List<string> GetLinks(String url, String page)
+        private List<string> GetLinks(Uri uri)
         {
-
-            if (!pages.ContainsKey(url)) return null;
-
-            var regex = new Regex(@"<a.*? href=""(?<url>http(s)?[\w\.:?&-_=#/]*)""+?");
-            MatchCollection matches = regex.Matches(page);
-
+            string html = new WebClient().DownloadString(uri);
+            Regex reHref = new Regex(@"(?inx)<a \s [^>]*href \s* = \s*(?<q> ['""] )(?<url> [^""]+ )\k<q>[^>]* >");
             var links = new List<string>();
-            for (var i = 0; i < matches.Count; i++)
+            foreach (Match match in reHref.Matches(html))
             {
-                var link = matches[i].Groups["url"].Value;
-                if (!pages.ContainsKey(link) && !links.Contains(link))
-                    links.Add(link);
+                //Console.WriteLine(match.Groups["url"].ToString());
+                links.Add(match.Groups["url"].ToString());
             }
-
             return links;
 
         }
@@ -76,13 +72,8 @@ namespace WebPagesAsync
 
             Downloader url = new Downloader(3);
 
-            var task = url.GetPages(new Url("https://fb.com/"));
-
-            foreach (var page in url.pages)
-            {
-                Console.Write(page.Key + " -- " + page.Value + "\n");
-            }
-
+            var task = url.GetPages(new Uri("https://Yandex.ru/"));
+            
             Console.ReadKey();
         }
     }
