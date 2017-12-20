@@ -10,7 +10,6 @@ namespace WebPagesAsync
     public class Downloader
     {
         public int maxDepth;
-        public Dictionary<String, int> pages = new Dictionary<string, int>();
 
         public Downloader(int maxValueofDepth = 3)
         {
@@ -20,10 +19,8 @@ namespace WebPagesAsync
         public async Task GetPages(Uri uri, int depth = 0)
         {
             if (depth == maxDepth) return;
-            //Console.WriteLine(uri.ToString());
-            var str = GetPageContent(uri.ToString());
-
-            //pages.Add(url.Value, str.Length);
+            var str = await GetPageContent(uri.ToString());
+            
             Console.WriteLine(uri.ToString() + " -- "+ str.Length + " | " + depth);
 
             List<String> links = new List<String>();
@@ -36,28 +33,29 @@ namespace WebPagesAsync
                 //Console.WriteLine(link);
                 tasks.Add(GetPages(new Uri(link), depth + 1));
             }
+            await Task.WhenAll(tasks.ToArray());
             return;
         }
         private List<string> GetLinks(Uri uri)
         {
             string html = new WebClient().DownloadString(uri);
-            Regex reHref = new Regex(@"(?inx)<a \s [^>]*href \s* = \s*(?<q> ['""] )(?<url> [^""]+ )\k<q>[^>]* >");
+            Regex reHref = new Regex(@"http(s)?://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?");
             var links = new List<string>();
             foreach (Match match in reHref.Matches(html))
             {
                 //Console.WriteLine(match.Groups["url"].ToString());
-                links.Add(match.Groups["url"].ToString());
+                links.Add(match.Value);
             }
             return links;
 
         }
 
-        private String GetPageContent(string url)
+        private async Task<String> GetPageContent(string url)
         {
             string str;
             using (var client = new WebClient())
             {
-                var bytes = client.DownloadData(url);
+                var bytes = await client.DownloadDataTaskAsync(url);
                 str = client.Encoding.GetString(bytes);
             }
             return str;
@@ -69,11 +67,11 @@ namespace WebPagesAsync
         public static void Main(string[] args)
         {
 
-            Downloader url = new Downloader(3);
+            Downloader url = new Downloader(2);
 
-            var task = url.GetPages(new Uri("https://Yandex.ru/"));
+            var task = url.GetPages(new Uri("https://Github.com/"));
+            task.Wait();
             
-            Console.ReadKey();
         }
     }
 
