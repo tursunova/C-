@@ -8,54 +8,56 @@ using System.Threading;
 namespace parallel_rbtree
 {
 
-    public class insertThread //extends Thread
+    public class insertThread
     {
 
         public static int thread_id = 0;
         public int id;
         private RBTree rbTree;
         private int[] values;
-        //private Lock lock;
+        private Thread thread; 
+        private Object Lock;
 	
 	    public insertThread(RBTree rbTree, int[] values)
         {
             this.id = thread_id++;
             this.rbTree = rbTree;
             this.values = values;
-            //this.lock = null;
+            this.Lock = new Object();
         }
-        /*
-        public insertThread(RBTree rbTree, int[] values, Lock lock)
+        
+        public insertThread(RBTree rbTree, int[] values, object Lock)
         {
             this.id = thread_id++;
             this.rbTree = rbTree;
             this.values = values;
-            this.lock = lock;
+            this.Lock = Lock;
+
         }
-        */
+
+        public Thread getInstance()
+        {
+            thread = new Thread(run);
+            return thread;
+        }
+
+
         public void run()
         {
             foreach (int value in values)
             {
-                //System.out.println("Thread "+id+" add "+ value);
-               /* if (lock != null)
+                Console.WriteLine("Thread "+id+" add "+ value);
+               
+                    try
                     {
-                        lock.lock () ;
+                        this.rbTree.insert(value);
                     }
-                    */
-                try
-                {
-                    this.rbTree.insert(value);
-                }
-                catch(Exception e) //catch (NullPointerException e)
-                {
-                    // 
-                }
-                /*if (lock != null)
+                    catch (Exception e) //catch (NullPointerException e)
                     {
-                        lock.unlock();
+
                     }
-                    */
+                
+                  
             }
         }
     }

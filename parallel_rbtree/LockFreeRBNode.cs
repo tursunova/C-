@@ -90,9 +90,9 @@ namespace parallel_rbtree
             if (this == null) return 0;
             return (1 + Math.Max(this.getLeft().height(), this.getRight().height()));
         }
-        public void displayNode(LockFreeRBNode n)
+        public void displayNode()
         {
-            Console.WriteLine(n.getValue() + " ");
+            Console.WriteLine(value + " ");
         }
     }
 }

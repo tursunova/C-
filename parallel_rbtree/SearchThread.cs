@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace parallel_rbtree
 {
@@ -15,7 +15,8 @@ namespace parallel_rbtree
         private RBTree rbTree;
         private int num;
         private int nodes;
-        private Lock lock = null;
+        private Object Lock = null;
+        private Thread thread;
 	
 	    public SearchThread(RBTree rbTree, int num, int nodes)
         {
@@ -23,28 +24,34 @@ namespace parallel_rbtree
             this.rbTree = rbTree;
             this.num = num;
             this.nodes = nodes;
-            this.lock = null;
+            this.Lock = null;//new Object();
         }
 
-        public SearchThread(RBTree rbTree, int num, int nodes, Lock lock)
+        public SearchThread(RBTree rbTree, int num, int nodes, Object Lock)
         {
             this.id = thread_id++;
             this.rbTree = rbTree;
             this.num = num;
             this.nodes = nodes;
-            this.lock = lock;
+            this.Lock = Lock;
         }
-        
+        public Thread getInstance()
+        {
+            thread = new Thread(run);
+            return thread;
+        }
         public void run()
         {
             Random rand = new Random();
-            for (int i = 0; i < 10000; i++)
+            for (int i = 0; i < 10; i++)
             {
-                if (lock != null) lock.lock () ;
-                Integer target = rand.nextInt(nodes * num);
-                //System.out.println("Thread "+id+" search "+target);
-                Integer result = this.rbTree.search(target);
-                if (lock != null) lock.unlock();
+
+                int target = rand.Next(nodes * num);
+                Console.WriteLine("Thread " + id + " search " + target);
+                int? result = this.rbTree.search(target);
+
+
+
             }
         }
     }

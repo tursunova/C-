@@ -289,7 +289,7 @@ namespace parallel_rbtree
 		
 		    if (n == null)
 			    return;
-		    //n.displayNode(n);
+		    n.displayNode();
 		    preOrder(n.getLeft());
 		    preOrder(n.getRight());
 	    }
@@ -298,7 +298,7 @@ namespace parallel_rbtree
 		
 		    if (n == null)
 			    return;
-		    ///n.displayNode(n);
+		    n.displayNode();
 		    preOrder(n.getLeft());
 		    preOrder(n.getRight());
 	    }
