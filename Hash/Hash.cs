@@ -13,6 +13,7 @@ namespace Hash
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("hello");
             string path = Console.ReadLine(); ;
 
             if (File.Exists(path) || Directory.Exists(path))
