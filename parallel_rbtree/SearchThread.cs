@@ -46,6 +46,7 @@ namespace parallel_rbtree
                 int target = rand.Next(_nodes * _num);
                 Console.WriteLine("Thread " + Id + " search " + target);
                 int? result = _rbTree.Search(target);
+                if (result != null) Console.WriteLine("FIND!!! " + target);
             }
         }
     }

@@ -64,7 +64,6 @@ namespace parallel_rbtree
             {
                 thread.Join();
             }
-            Console.ReadKey();
         }
     }
 }

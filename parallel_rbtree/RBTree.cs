@@ -2,7 +2,7 @@
 {
     public interface IRbTree
     {
-        int? Search(int? value);
-        void Insert(int? value);
+        int? Search(int value);
+        void Insert(int value);
     }
 }

@@ -8,7 +8,7 @@ namespace parallel_rbtree
         private LockedRbNode _left;
         private LockedRbNode _parent;
         private LockedRbNode _right;
-        private int? _value;
+        private int _value;
 
         public LockedRbNode()
         {
@@ -19,7 +19,7 @@ namespace parallel_rbtree
             _isRed = false;
         }
 
-        public LockedRbNode(int? value)
+        public LockedRbNode(int value)
         {
             this._value = value;
             _left = new LockedRbNode();

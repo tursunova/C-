@@ -9,9 +9,9 @@ namespace parallel_rbtree
         private LockFreeRbNode _left;
         private LockFreeRbNode _parent;
         private LockFreeRbNode _right;
-        private int? _value;
+        private int _value;
 
-        public int? Value { get => _value; set => this._value = value; }
+        public int Value { get => _value; set => this._value = value; }
         public LockFreeRbNode Left { get => _left; set => this._left = Left; }
         public LockFreeRbNode Right { get => _right; set => this._right = Right; }
         public LockFreeRbNode Parent { get => _parent; set => this._parent = Parent; }
@@ -27,7 +27,7 @@ namespace parallel_rbtree
             Flag = new AtomicBoolean(false);
         }
 
-        public LockFreeRbNode(int? value)
+        public LockFreeRbNode(int value)
         {
             this._value = value;
             _left = new LockFreeRbNode();

@@ -14,7 +14,7 @@ namespace parallel_rbtree
             Root = null;
         }
 
-        public int? Search(int? value) 
+        public int? Search(int value) 
         {
             if (Root == null)
             {
@@ -44,13 +44,13 @@ namespace parallel_rbtree
             
         }
 
-        public void Insert(int? value) 
+        public void Insert(int value) 
         {
             LockedRbNode insertedNode = PhysicallyInsert(value);
             RbInsertFixup(insertedNode);
         }
 
-        private LockedRbNode PhysicallyInsert(int? value)
+        private LockedRbNode PhysicallyInsert(int value)
         {
             LockedRbNode insertedNode = new LockedRbNode(value);
             if (Root == null || Root.GetValue() < 0)

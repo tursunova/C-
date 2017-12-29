@@ -13,7 +13,7 @@ namespace parallel_rbtree
             Root = new LockFreeRbNode();
         }
 
-        public int? Search(int? value)
+        public int? Search(int value)
         {
             if (Root == null)
             {
@@ -42,12 +42,12 @@ namespace parallel_rbtree
             return temp.Value;
         }
 
-        public void Insert(int? value)
+        public void Insert(int value)
         {
-            if (value == null)
+            /*if (value == null)
             {
                 throw new ArgumentException("Parameter cannot be null", "original");
-            }
+            }*/
             LockFreeRbNode insertedNode = new LockFreeRbNode(value);
             LockFreeRbNode temp1, temp2;
             insertedNode.Flag.Set(true);
