@@ -1,65 +1,54 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Threading;
 
 namespace parallel_rbtree
 {
-
-    public class insertThread
+    public class InsertThread
     {
+        public static int ThreadId;
+        public int Id;
+        private object _lock;
+        private readonly IRbTree _rbTree;
+        private Thread _thread;
+        private readonly int[] _values;
 
-        public static int thread_id = 0;
-        public int id;
-        private RBTree rbTree;
-        private int[] values;
-        private Thread thread; 
-        private Object Lock;
-	
-	    public insertThread(RBTree rbTree, int[] values)
+        public InsertThread(IRbTree rbTree, int[] values)
         {
-            this.id = thread_id++;
-            this.rbTree = rbTree;
-            this.values = values;
-            this.Lock = new Object();
-        }
-        
-        public insertThread(RBTree rbTree, int[] values, object Lock)
-        {
-            this.id = thread_id++;
-            this.rbTree = rbTree;
-            this.values = values;
-            this.Lock = Lock;
-
+            Id = ThreadId++;
+            this._rbTree = rbTree;
+            this._values = values;
+            _lock = new object();
         }
 
-        public Thread getInstance()
+        public InsertThread(IRbTree rbTree, int[] values, object Lock)
         {
-            thread = new Thread(run);
-            return thread;
+            Id = ThreadId++;
+            this._rbTree = rbTree;
+            this._values = values;
+            this._lock = Lock;
+        }
+
+        public Thread GetInstance()
+        {
+            _thread = new Thread(Run);
+            return _thread;
         }
 
 
-        public void run()
+        public void Run()
         {
-            foreach (int value in values)
+            foreach (int value in _values)
             {
-                Console.WriteLine("Thread "+id+" add "+ value);
-               
-                    try
-                    {
-                        this.rbTree.insert(value);
-                    }
-                    catch (Exception e) //catch (NullPointerException e)
-                    {
+                Console.WriteLine("Thread " + Id + " add " + value);
 
-                    }
-                
-                  
+                try
+                {
+                    _rbTree.Insert(value);
+                }
+                catch (Exception e) //catch (NullPointerException e)
+                {
+                }
             }
         }
     }
-
 }

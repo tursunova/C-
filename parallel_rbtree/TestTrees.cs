@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace parallel_rbtree
+﻿namespace parallel_rbtree
 {
-    class TestTrees
+    internal class TestTrees
     {
     }
 }

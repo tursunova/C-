@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace parallel_rbtree
+﻿namespace parallel_rbtree
 {
-    public interface RBTree
+    public interface IRbTree
     {
-        int? search(int? value);
-        void insert(int? value);
+        int? Search(int? value);
+        void Insert(int? value);
     }
 }

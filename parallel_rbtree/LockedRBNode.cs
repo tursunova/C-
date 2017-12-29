@@ -1,89 +1,86 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace parallel_rbtree
 {
-    public class LockedRBNode
+    public class LockedRbNode
     {
-        private int? value;
-        private LockedRBNode left;
-        private LockedRBNode right;
-        private LockedRBNode parent;
-        private Boolean isRed;
+        private bool _isRed;
+        private LockedRbNode _left;
+        private LockedRbNode _parent;
+        private LockedRbNode _right;
+        private int? _value;
 
-        public LockedRBNode()
+        public LockedRbNode()
         {
-            this.value = Int32.MinValue;
-            this.left = null;
-            this.right = null;
-            this.parent = null;
-            this.isRed = false;
+            _value = int.MinValue;
+            _left = null;
+            _right = null;
+            _parent = null;
+            _isRed = false;
         }
 
-        public LockedRBNode(int? value)
+        public LockedRbNode(int? value)
         {
-            this.value = value;
-            this.left = new LockedRBNode();
-            this.right = new LockedRBNode();
-            this.parent = null;
-            this.isRed = true;
+            this._value = value;
+            _left = new LockedRbNode();
+            _right = new LockedRbNode();
+            _parent = null;
+            _isRed = true;
         }
 
-        public int? getValue()
+        public int? GetValue()
         {
-            return value;
+            return _value;
         }
 
-        public void setValue(int value)
+        public void SetValue(int value)
         {
-            this.value = value;
+            this._value = value;
         }
 
-        public LockedRBNode getLeft()
+        public LockedRbNode GetLeft()
         {
-            return left;
+            return _left;
         }
 
-        public void setLeft(LockedRBNode left)
+        public void SetLeft(LockedRbNode left)
         {
-            this.left = left;
+            this._left = left;
         }
 
-        public LockedRBNode getRight()
+        public LockedRbNode GetRight()
         {
-            return right;
+            return _right;
         }
 
-        public void setRight(LockedRBNode right)
+        public void SetRight(LockedRbNode right)
         {
-            this.right = right;
+            this._right = right;
         }
 
-        public LockedRBNode getParent()
+        public LockedRbNode GetParent()
         {
-            return parent;
+            return _parent;
         }
 
-        public void setParent(LockedRBNode parent)
+        public void SetParent(LockedRbNode parent)
         {
-            this.parent = parent;
+            this._parent = parent;
         }
 
-        public Boolean IsRed()
+        public bool IsRed()
         {
-            return isRed;
+            return _isRed;
         }
 
-        public void setRed(Boolean isRed)
+        public void SetRed(bool isRed)
         {
-            this.isRed = isRed;
+            this._isRed = isRed;
         }
-        public void displayNode(LockedRBNode n)
+
+        public void DisplayNode(LockedRbNode n)
         {
-            Console.WriteLine(n.getValue() + " ");
+            Console.WriteLine(n.GetValue() + " ");
         }
     }
 }

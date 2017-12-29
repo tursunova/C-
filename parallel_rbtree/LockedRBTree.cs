@@ -1,81 +1,79 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.CompilerServices; // MethodImpl
+
 
 namespace parallel_rbtree
 {
-
-    public class LockedRBTree : RBTree
+    public class LockedRbTree : IRbTree
     {
+        public LockedRbNode Root;
 
-        public int size = 0;
-        public LockedRBNode root;
+        public int Size = 0;
 
-        public LockedRBTree()
+        public LockedRbTree()
         {
-            this.root = null;
+            Root = null;
         }
 
-        public int? search(int? value) //synchronized
+        public int? Search(int? value) 
         {
-            if (root == null) return Int32.MinValue;
-            LockedRBNode temp = root;
-            while (temp != null && temp.getValue() > 0)
+            if (Root == null)
             {
-                if (value < temp.getValue())
+                return int.MinValue;
+            }
+            LockedRbNode temp = Root;
+            while (temp != null && temp.GetValue() > 0)
+            {
+                if (value < temp.GetValue())
                 {
-                    temp = temp.getLeft();
+                    temp = temp.GetLeft();
                 }
-                else if (value > temp.getValue())
+                else if (value > temp.GetValue())
                 {
-                    temp = temp.getRight();
+                    temp = temp.GetRight();
                 }
                 else
                 {
-                    return temp.getValue();
+                    return temp.GetValue();
                 }
             }
             if (temp == null)
-                return null;
-            else
-                return temp.getValue();
-
-            //return temp == null ? null : temp.getValue();
-        }
-
-        public void insert(int? value) // synchronized
-        {
-            LockedRBNode insertedNode = physicallyInsert(value);
-            rbInsertFixup(insertedNode);
-        }
-
-        private LockedRBNode physicallyInsert(int? value)
-        {
-            LockedRBNode insertedNode = new LockedRBNode(value);
-            if (root == null || root.getValue() < 0)
             {
-                root = insertedNode;
-                root.setRed(false);
-                insertedNode.setLeft(new LockedRBNode());
-                insertedNode.setRight(new LockedRBNode());
-                insertedNode.getLeft().setParent(insertedNode);
-                insertedNode.getRight().setParent(insertedNode);
+                return null;
+            }
+            return temp.GetValue();
+            
+        }
+
+        public void Insert(int? value) 
+        {
+            LockedRbNode insertedNode = PhysicallyInsert(value);
+            RbInsertFixup(insertedNode);
+        }
+
+        private LockedRbNode PhysicallyInsert(int? value)
+        {
+            LockedRbNode insertedNode = new LockedRbNode(value);
+            if (Root == null || Root.GetValue() < 0)
+            {
+                Root = insertedNode;
+                Root.SetRed(false);
+                insertedNode.SetLeft(new LockedRbNode());
+                insertedNode.SetRight(new LockedRbNode());
+                insertedNode.GetLeft().SetParent(insertedNode);
+                insertedNode.GetRight().SetParent(insertedNode);
                 return insertedNode;
             }
 
-            LockedRBNode temp = root;
-            while (temp.getValue() >= 0)
+            LockedRbNode temp = Root;
+            while (temp.GetValue() >= 0)
             {
-                if (value < temp.getValue())
+                if (value < temp.GetValue())
                 {
-                    temp = temp.getLeft();
+                    temp = temp.GetLeft();
                 }
-                else if (value > temp.getValue())
+                else if (value > temp.GetValue())
                 {
-                    temp = temp.getRight();
+                    temp = temp.GetRight();
                 }
                 else
                 {
@@ -83,151 +81,167 @@ namespace parallel_rbtree
                 }
             }
 
-            if (temp == temp.getParent().getLeft())
+            if (temp == temp.GetParent().GetLeft())
             {
-                temp.getParent().setLeft(insertedNode);
+                temp.GetParent().SetLeft(insertedNode);
             }
             else
             {
-                temp.getParent().setRight(insertedNode);
+                temp.GetParent().SetRight(insertedNode);
             }
-            insertedNode.setParent(temp.getParent());
-            insertedNode.getLeft().setParent(insertedNode);
-            insertedNode.getRight().setParent(insertedNode);
+            insertedNode.SetParent(temp.GetParent());
+            insertedNode.GetLeft().SetParent(insertedNode);
+            insertedNode.GetRight().SetParent(insertedNode);
             return insertedNode;
         }
 
-        private void rbInsertFixup(LockedRBNode x)
+        private void RbInsertFixup(LockedRbNode x)
         {
-            while (x != this.root && x.getParent().IsRed())
+            while (x != Root && x.GetParent().IsRed())
             {
-                if (x.getParent() == x.getParent().getParent().getLeft())
+                if (x.GetParent() == x.GetParent().GetParent().GetLeft())
                 {
-                    LockedRBNode uncle = x.getParent().getParent().getRight();
+                    LockedRbNode uncle = x.GetParent().GetParent().GetRight();
                     if (uncle.IsRed())
                     {
-                        // Case 1
-                        x.getParent().setRed(false);
-                        uncle.setRed(false);
-                        x.getParent().getParent().setRed(true);
-                        x = x.getParent().getParent();
+                        x.GetParent().SetRed(false);
+                        uncle.SetRed(false);
+                        x.GetParent().GetParent().SetRed(true);
+                        x = x.GetParent().GetParent();
                     }
                     else
                     {
-                        if (x == x.getParent().getRight())
+                        if (x == x.GetParent().GetRight())
                         {
-                            // Case 2
-                            x = x.getParent();
-                            leftRotate(x);
+                            x = x.GetParent();
+                            LeftRotate(x);
                         }
-                        // Case 3
-                        x.getParent().setRed(false);
-                        x.getParent().getParent().setRed(true);
-                        rightRotate(x.getParent().getParent());
+                        x.GetParent().SetRed(false);
+                        x.GetParent().GetParent().SetRed(true);
+                        RightRotate(x.GetParent().GetParent());
                     }
                 }
                 else
                 {
-                    LockedRBNode uncle = x.getParent().getParent().getLeft();
+                    LockedRbNode uncle = x.GetParent().GetParent().GetLeft();
                     if (uncle.IsRed())
                     {
-                        //Case 1
-                        x.getParent().setRed(false);
-                        uncle.setRed(false);
-                        x.getParent().getParent().setRed(true);
-                        x = x.getParent().getParent();
+                        x.GetParent().SetRed(false);
+                        uncle.SetRed(false);
+                        x.GetParent().GetParent().SetRed(true);
+                        x = x.GetParent().GetParent();
                     }
                     else
                     {
-                        if (x == x.getParent().getLeft())
+                        if (x == x.GetParent().GetLeft())
                         {
-                            // Case 2
-                            x = x.getParent();
-                            rightRotate(x);
+                            x = x.GetParent();
+                            RightRotate(x);
                         }
-                        // Case 3
-                        x.getParent().setRed(false);
-                        x.getParent().getParent().setRed(true);
-                        leftRotate(x.getParent().getParent());
+                        x.GetParent().SetRed(false);
+                        x.GetParent().GetParent().SetRed(true);
+                        LeftRotate(x.GetParent().GetParent());
                     }
                 }
             }
-            this.root.setRed(false);
+            Root.SetRed(false);
         }
 
-        private void leftRotate(LockedRBNode x)
+        private void LeftRotate(LockedRbNode x)
         {
-            if (x == null) return;
-            LockedRBNode y = x.getRight();
-            x.setRight(y.getLeft());
-            if (y.getLeft() != null)
+            if (x == null)
             {
-                y.getLeft().setParent(x);
+                return;
             }
-            y.setParent(x.getParent());
-            if (x.getParent() == null) this.root = y;
+            LockedRbNode y = x.GetRight();
+            x.SetRight(y.GetLeft());
+            if (y.GetLeft() != null)
+            {
+                y.GetLeft().SetParent(x);
+            }
+            y.SetParent(x.GetParent());
+            if (x.GetParent() == null)
+            {
+                Root = y;
+            }
             else
             {
-                if (x == x.getParent().getLeft())
-                    x.getParent().setLeft(y);
+                if (x == x.GetParent().GetLeft())
+                {
+                    x.GetParent().SetLeft(y);
+                }
                 else
-                    x.getParent().setRight(y);
+                {
+                    x.GetParent().SetRight(y);
+                }
             }
-            y.setLeft(x);
-            x.setParent(y);
+            y.SetLeft(x);
+            x.SetParent(y);
         }
 
-        private void rightRotate(LockedRBNode y)
+        private void RightRotate(LockedRbNode y)
         {
-            if (y == null) return;
-            LockedRBNode x = y.getLeft();
-            y.setLeft(x.getRight());
-            if (x.getRight() != null)
+            if (y == null)
             {
-                x.getRight().setParent(y);
+                return;
             }
-            x.setParent(y.getParent());
-            if (y.getParent() == null) this.root = x;
+            LockedRbNode x = y.GetLeft();
+            y.SetLeft(x.GetRight());
+            if (x.GetRight() != null)
+            {
+                x.GetRight().SetParent(y);
+            }
+            x.SetParent(y.GetParent());
+            if (y.GetParent() == null)
+            {
+                Root = x;
+            }
             else
             {
-                if (y == y.getParent().getLeft())
-                    y.getParent().setLeft(x);
+                if (y == y.GetParent().GetLeft())
+                {
+                    y.GetParent().SetLeft(x);
+                }
                 else
-                    y.getParent().setRight(x);
+                {
+                    y.GetParent().SetRight(x);
+                }
             }
-            x.setRight(y);
-            y.setParent(x);
+            x.SetRight(y);
+            y.SetParent(x);
         }
 
 
-
-        public int getheight(LockedRBNode root)
+        public int Getheight(LockedRbNode root)
         {
             if (root == null)
+            {
                 return 0;
-            return Math.Max(getheight(root.getLeft()), getheight(root.getRight())) + 1;
+            }
+            return Math.Max(Getheight(root.GetLeft()), Getheight(root.GetRight())) + 1;
         }
 
 
-        public void preOrder(LockedRBNode n)
+        public void PreOrder(LockedRbNode n)
         {
-
             if (n == null)
+            {
                 return;
+            }
             //n.displayNode(n);
-            preOrder(n.getLeft());
-            preOrder(n.getRight());
+            PreOrder(n.GetLeft());
+            PreOrder(n.GetRight());
         }
 
-        public void breadth(LockedRBNode n)
+        public void Breadth(LockedRbNode n)
         {
-
             if (n == null)
+            {
                 return;
+            }
             //n.displayNode(n);
-            preOrder(n.getLeft());
-            preOrder(n.getRight());
+            PreOrder(n.GetLeft());
+            PreOrder(n.GetRight());
         }
-
-    } 
+    }
 }

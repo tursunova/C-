@@ -1,57 +1,51 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace parallel_rbtree
 {
-    public class SearchThread  //extends Thread
+    public class SearchThread 
     {
+        public static int ThreadId = 100;
 
-        public static int thread_id = 100;
+        public int Id;
+        private object _lock;
+        private readonly int _nodes;
+        private readonly int _num;
+        private readonly IRbTree _rbTree;
+        private Thread _thread;
 
-        public int id;
-        private RBTree rbTree;
-        private int num;
-        private int nodes;
-        private Object Lock = null;
-        private Thread thread;
-	
-	    public SearchThread(RBTree rbTree, int num, int nodes)
+        public SearchThread(IRbTree rbTree, int num, int nodes)
         {
-            this.id = thread_id++;
-            this.rbTree = rbTree;
-            this.num = num;
-            this.nodes = nodes;
-            this.Lock = null;//new Object();
+            Id = ThreadId++;
+            this._rbTree = rbTree;
+            this._num = num;
+            this._nodes = nodes;
+            _lock = null; //new Object();
         }
 
-        public SearchThread(RBTree rbTree, int num, int nodes, Object Lock)
+        public SearchThread(IRbTree rbTree, int num, int nodes, object Lock)
         {
-            this.id = thread_id++;
-            this.rbTree = rbTree;
-            this.num = num;
-            this.nodes = nodes;
-            this.Lock = Lock;
+            Id = ThreadId++;
+            this._rbTree = rbTree;
+            this._num = num;
+            this._nodes = nodes;
+            this._lock = Lock;
         }
-        public Thread getInstance()
+
+        public Thread GetInstance()
         {
-            thread = new Thread(run);
-            return thread;
+            _thread = new Thread(Run);
+            return _thread;
         }
-        public void run()
+
+        public void Run()
         {
             Random rand = new Random();
             for (int i = 0; i < 10; i++)
             {
-
-                int target = rand.Next(nodes * num);
-                Console.WriteLine("Thread " + id + " search " + target);
-                int? result = this.rbTree.search(target);
-
-
-
+                int target = rand.Next(_nodes * _num);
+                Console.WriteLine("Thread " + Id + " search " + target);
+                int? result = _rbTree.Search(target);
             }
         }
     }

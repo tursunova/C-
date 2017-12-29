@@ -1,25 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
 
 namespace parallel_rbtree
 {
     /// <summary>
-    /// Provides non-blocking, thread-safe access to a boolean valueB.
+    ///     Provides non-blocking, thread-safe access to a boolean valueB.
     /// </summary>
     public class AtomicBoolean
     {
-        #region Member Variables
-
-        private const int VALUE_TRUE = 1;
-        private const int VALUE_FALSE = 0;
-
-        private int _currentValue;
-
-        #endregion
-
         #region Constructor
 
         public AtomicBoolean(bool initialValue)
@@ -29,45 +16,48 @@ namespace parallel_rbtree
 
         #endregion
 
+        #region Member Variables
+
+        private const int ValueTrue = 1;
+        private const int ValueFalse = 0;
+
+        private int _currentValue;
+
+        #endregion
+
         #region Private Methods
 
         private int BoolToInt(bool value)
         {
-            return value ? VALUE_TRUE : VALUE_FALSE;
+            return value ? ValueTrue : ValueFalse;
         }
 
         private bool IntToBool(int value)
         {
-            return value == VALUE_TRUE;
+            return value == ValueTrue;
         }
 
         #endregion
 
         #region Public Properties and Methods
 
-        public bool Value
-        {
-            get
-            {
-                return IntToBool(Interlocked.Add(
-                ref _currentValue, 0));
-            }
-        }
+        public bool Value => IntToBool(Interlocked.Add(
+            ref _currentValue, 0));
 
         /// <summary>
-        /// Sets the boolean value.
+        ///     Sets the boolean value.
         /// </summary>
         /// <param name="newValue"></param>
         /// <returns>The original value.</returns>
         public bool Set(bool newValue)
         {
             return IntToBool(
-            Interlocked.Exchange(ref _currentValue,
-            BoolToInt(newValue)));
+                Interlocked.Exchange(ref _currentValue,
+                    BoolToInt(newValue)));
         }
 
         /// <summary>
-        /// Compares with expected value and if same, assigns the new value.
+        ///     Compares with expected value and if same, assigns the new value.
         /// </summary>
         /// <param name="expectedValue"></param>
         /// <param name="newValue"></param>
@@ -78,10 +68,9 @@ namespace parallel_rbtree
             int expectedVal = BoolToInt(expectedValue);
             int newVal = BoolToInt(newValue);
             return Interlocked.CompareExchange(
-            ref _currentValue, newVal, expectedVal) == expectedVal;
+                       ref _currentValue, newVal, expectedVal) == expectedVal;
         }
 
         #endregion
-
     }
 }

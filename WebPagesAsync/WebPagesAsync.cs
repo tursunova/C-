@@ -1,78 +1,76 @@
 using System;
 using System.Collections.Generic;
-using System.Security.Policy;
-using System.Threading.Tasks;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace WebPagesAsync
 {
     public class Downloader
     {
-        public int maxDepth;
+        public int MaxDepth;
 
         public Downloader(int maxValueofDepth = 3)
         {
-            maxDepth = maxValueofDepth;
+            MaxDepth = maxValueofDepth;
         }
 
         public async Task GetPages(Uri uri, int depth = 0)
         {
-            if (depth == maxDepth) return;
-            var str = await GetPageContent(uri.ToString());
-            
-            Console.WriteLine(uri.ToString() + " -- "+ str.Length + " | " + depth);
+            if (depth == MaxDepth)
+            {
+                return;
+            }
+            string str = await GetPageContent(uri.ToString());
 
-            List<String> links = new List<String>();
+            Console.WriteLine(uri + " -- " + str.Length + " | " + depth);
+
+            List<string> links = new List<string>();
             List<Task> tasks = new List<Task>();
 
             links = GetLinks(uri);
 
-            foreach (var link in links)
+            foreach (string link in links)
             {
                 //Console.WriteLine(link);
                 tasks.Add(GetPages(new Uri(link), depth + 1));
             }
             await Task.WhenAll(tasks.ToArray());
-            return;
         }
+
         private List<string> GetLinks(Uri uri)
         {
             string html = new WebClient().DownloadString(uri);
             Regex reHref = new Regex(@"http(s)?://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?");
-            var links = new List<string>();
+            List<string> links = new List<string>();
             foreach (Match match in reHref.Matches(html))
             {
                 //Console.WriteLine(match.Groups["url"].ToString());
                 links.Add(match.Value);
             }
             return links;
-
         }
 
-        private async Task<String> GetPageContent(string url)
+        private async Task<string> GetPageContent(string url)
         {
             string str;
-            using (var client = new WebClient())
+            using (WebClient client = new WebClient())
             {
-                var bytes = await client.DownloadDataTaskAsync(url);
+                byte[] bytes = await client.DownloadDataTaskAsync(url);
                 str = client.Encoding.GetString(bytes);
             }
             return str;
         }
-
     }
-    class Program
+
+    internal class Program
     {
         public static void Main(string[] args)
         {
-
             Downloader url = new Downloader(2);
 
-            var task = url.GetPages(new Uri("https://Github.com/"));
+            Task task = url.GetPages(new Uri("https://Github.com/"));
             task.Wait();
-            
         }
     }
-
 }
