@@ -15,6 +15,14 @@ namespace Wait_free
         private readonly Register[] _r;
         private readonly Stopwatch _timer = new Stopwatch();
 
+        public struct Register
+        {
+            public int Value { get; set; }
+            public bool[] P { get; set; }
+            public bool Toggle { get; set; }
+            public int[] Snapshot { get; set; }
+        }
+
         public Bsw(int regcount)
         {
             _regcount = regcount;
@@ -122,13 +130,6 @@ namespace Wait_free
             Console.WriteLine("----------------------------");
         }
 
-        public struct Register
-        {
-            public int Value;
-            public bool[] P;
-            public bool Toggle;
-            public int[] Snapshot;
-        }
     }
 
     internal class Program
