@@ -21,26 +21,26 @@ namespace parallel_rbtree
                 return int.MinValue;
             }
             LockedRbNode temp = Root;
-            while (temp != null && temp.GetValue() > 0)
+            while (temp != null && temp.Value > 0)
             {
-                if (value < temp.GetValue())
+                if (value < temp.Value)
                 {
-                    temp = temp.GetLeft();
+                    temp = temp.Left;
                 }
-                else if (value > temp.GetValue())
+                else if (value > temp.Value)
                 {
-                    temp = temp.GetRight();
+                    temp = temp.Right;
                 }
                 else
                 {
-                    return temp.GetValue();
+                    return temp.Value;
                 }
             }
             if (temp == null)
             {
                 return null;
             }
-            return temp.GetValue();
+            return temp.Value;
             
         }
 
@@ -53,27 +53,27 @@ namespace parallel_rbtree
         private LockedRbNode PhysicallyInsert(int value)
         {
             LockedRbNode insertedNode = new LockedRbNode(value);
-            if (Root == null || Root.GetValue() < 0)
+            if (Root == null || Root.Value < 0)
             {
                 Root = insertedNode;
-                Root.SetRed(false);
-                insertedNode.SetLeft(new LockedRbNode());
-                insertedNode.SetRight(new LockedRbNode());
-                insertedNode.GetLeft().SetParent(insertedNode);
-                insertedNode.GetRight().SetParent(insertedNode);
+                Root.IsRed = false;
+                insertedNode.Left = new LockedRbNode();
+                insertedNode.Right = new LockedRbNode();
+                insertedNode.Left.Parent = insertedNode;
+                insertedNode.Right.Parent = insertedNode;
                 return insertedNode;
             }
 
             LockedRbNode temp = Root;
-            while (temp.GetValue() >= 0)
+            while (temp.Value >= 0)
             {
-                if (value < temp.GetValue())
+                if (value < temp.Value)
                 {
-                    temp = temp.GetLeft();
+                    temp = temp.Left;
                 }
-                else if (value > temp.GetValue())
+                else if (value > temp.Value)
                 {
-                    temp = temp.GetRight();
+                    temp = temp.Right;
                 }
                 else
                 {
@@ -81,70 +81,70 @@ namespace parallel_rbtree
                 }
             }
 
-            if (temp == temp.GetParent().GetLeft())
+            if (temp == temp.Parent.Left)
             {
-                temp.GetParent().SetLeft(insertedNode);
+                temp.Parent.Left = insertedNode;
             }
             else
             {
-                temp.GetParent().SetRight(insertedNode);
+                temp.Parent.Right = insertedNode;
             }
-            insertedNode.SetParent(temp.GetParent());
-            insertedNode.GetLeft().SetParent(insertedNode);
-            insertedNode.GetRight().SetParent(insertedNode);
+            insertedNode.Parent = temp.Parent;
+            insertedNode.Left.Parent = insertedNode;
+            insertedNode.Right.Parent = insertedNode;
             return insertedNode;
         }
 
         private void RbInsertFixup(LockedRbNode x)
         {
-            while (x != Root && x.GetParent().IsRed())
+            while (x != Root && x.Parent.IsRed)
             {
-                if (x.GetParent() == x.GetParent().GetParent().GetLeft())
+                if (x.Parent == x.Parent.Parent.Left)
                 {
-                    LockedRbNode uncle = x.GetParent().GetParent().GetRight();
-                    if (uncle.IsRed())
+                    LockedRbNode uncle = x.Parent.Parent.Right;
+                    if (uncle.IsRed)
                     {
-                        x.GetParent().SetRed(false);
-                        uncle.SetRed(false);
-                        x.GetParent().GetParent().SetRed(true);
-                        x = x.GetParent().GetParent();
+                        x.Parent.IsRed = false;
+                        uncle.IsRed = false;
+                        x.Parent.Parent.IsRed = true;
+                        x = x.Parent.Parent;
                     }
                     else
                     {
-                        if (x == x.GetParent().GetRight())
+                        if (x == x.Parent.Right)
                         {
-                            x = x.GetParent();
+                            x = x.Parent;
                             LeftRotate(x);
                         }
-                        x.GetParent().SetRed(false);
-                        x.GetParent().GetParent().SetRed(true);
-                        RightRotate(x.GetParent().GetParent());
+                        x.Parent.IsRed = false;
+                        x.Parent.Parent.IsRed = true;
+                        RightRotate(x.Parent.Parent);
                     }
                 }
                 else
                 {
-                    LockedRbNode uncle = x.GetParent().GetParent().GetLeft();
-                    if (uncle.IsRed())
+                    LockedRbNode uncle = x.Parent.Parent.Left;
+                    if (uncle.IsRed)
                     {
-                        x.GetParent().SetRed(false);
-                        uncle.SetRed(false);
-                        x.GetParent().GetParent().SetRed(true);
-                        x = x.GetParent().GetParent();
+                        x.Parent.IsRed = false;
+                        uncle.IsRed = false;
+                        x.Parent.Parent.IsRed = true;
+                        x = x.Parent.Parent;
                     }
                     else
                     {
-                        if (x == x.GetParent().GetLeft())
+                        if (x == x.Parent.Left)
                         {
-                            x = x.GetParent();
+                            x = x.Parent;
                             RightRotate(x);
                         }
-                        x.GetParent().SetRed(false);
-                        x.GetParent().GetParent().SetRed(true);
-                        LeftRotate(x.GetParent().GetParent());
+                        x.Parent.IsRed = false;
+                        x.Parent.Parent.IsRed = true;
+                        LeftRotate(x.Parent.Parent);
                     }
                 }
             }
-            Root.SetRed(false);
+            Root.IsRed = false;
         }
 
         private void LeftRotate(LockedRbNode x)
@@ -153,30 +153,30 @@ namespace parallel_rbtree
             {
                 return;
             }
-            LockedRbNode y = x.GetRight();
-            x.SetRight(y.GetLeft());
-            if (y.GetLeft() != null)
+            LockedRbNode y = x.Right;
+            x.Right = y.Left;
+            if (y.Left != null)
             {
-                y.GetLeft().SetParent(x);
+                y.Left.Parent = x;
             }
-            y.SetParent(x.GetParent());
-            if (x.GetParent() == null)
+            y.Parent = x.Parent;
+            if (x.Parent == null)
             {
                 Root = y;
             }
             else
             {
-                if (x == x.GetParent().GetLeft())
+                if (x == x.Parent.Left)
                 {
-                    x.GetParent().SetLeft(y);
+                    x.Parent.Left = y;
                 }
                 else
                 {
-                    x.GetParent().SetRight(y);
+                    x.Parent.Right = y;
                 }
             }
-            y.SetLeft(x);
-            x.SetParent(y);
+            y.Left = x;
+            x.Parent = y;
         }
 
         private void RightRotate(LockedRbNode y)
@@ -185,30 +185,30 @@ namespace parallel_rbtree
             {
                 return;
             }
-            LockedRbNode x = y.GetLeft();
-            y.SetLeft(x.GetRight());
-            if (x.GetRight() != null)
+            LockedRbNode x = y.Left;
+            y.Left = x.Right;
+            if (x.Right != null)
             {
-                x.GetRight().SetParent(y);
+                x.Right.Parent = y;
             }
-            x.SetParent(y.GetParent());
-            if (y.GetParent() == null)
+            x.Parent = y.Parent;
+            if (y.Parent == null)
             {
                 Root = x;
             }
             else
             {
-                if (y == y.GetParent().GetLeft())
+                if (y == y.Parent.Left)
                 {
-                    y.GetParent().SetLeft(x);
+                    y.Parent.Left = x;
                 }
                 else
                 {
-                    y.GetParent().SetRight(x);
+                    y.Parent.Right = x;
                 }
             }
-            x.SetRight(y);
-            y.SetParent(x);
+            x.Right = y;
+            y.Parent = x;
         }
 
 
@@ -218,7 +218,7 @@ namespace parallel_rbtree
             {
                 return 0;
             }
-            return Math.Max(Getheight(root.GetLeft()), Getheight(root.GetRight())) + 1;
+            return Math.Max(Getheight(root.Left), Getheight(root.Right)) + 1;
         }
 
 
@@ -229,8 +229,8 @@ namespace parallel_rbtree
                 return;
             }
             //n.displayNode(n);
-            PreOrder(n.GetLeft());
-            PreOrder(n.GetRight());
+            PreOrder(n.Left);
+            PreOrder(n.Right);
         }
 
         public void Breadth(LockedRbNode n)
@@ -240,8 +240,8 @@ namespace parallel_rbtree
                 return;
             }
             //n.displayNode(n);
-            PreOrder(n.GetLeft());
-            PreOrder(n.GetRight());
+            PreOrder(n.Left);
+            PreOrder(n.Right);
         }
     }
 }
