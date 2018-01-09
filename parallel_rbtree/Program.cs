@@ -8,7 +8,6 @@ namespace parallel_rbtree
     {
         public static void Main(string[] args) 
         {
-            long start = 0, end = 0, duration = 0;
             int numThreads = 4;
             int insertNodesPerThread = 10;
             bool visulizeLockFreeTree = true;
@@ -38,7 +37,6 @@ namespace parallel_rbtree
             {
                 thread.Join();
             }
-            Console.WriteLine("Lock-Free RBTree uses " + (double) duration + " ms");
             
 
             if (visulizeLockFreeTree)

@@ -15,14 +15,6 @@ namespace Wait_free
         private readonly Register[] _r;
         private readonly Stopwatch _timer = new Stopwatch();
 
-        public struct Register
-        {
-            public int Value { get; set; }
-            public bool[] P { get; set; }
-            public bool Toggle { get; set; }
-            public int[] Snapshot { get; set; }
-        }
-
         public Bsw(int regcount)
         {
             _regcount = regcount;
@@ -51,8 +43,8 @@ namespace Wait_free
                     _q[id, j] = _r[j].P[id];
                 }
 
-                Register[] a = _r;
-                Register[] b = _r;
+                Register[] a = (Register[])_r.Clone();
+                Register[] b = (Register[])_r.Clone();
 
                 bool condition = true;
                 for (int j = 0; j < _regcount; j++)
@@ -130,6 +122,13 @@ namespace Wait_free
             Console.WriteLine("----------------------------");
         }
 
+        public struct Register
+        {
+            public int Value;
+            public bool[] P;
+            public bool Toggle;
+            public int[] Snapshot;
+        }
     }
 
     internal class Program
@@ -139,6 +138,7 @@ namespace Wait_free
             Bsw bsw = new Bsw(2);
             Random random = new Random();
             Task[] tasks = new Task[2];
+            List<Task> taskReader = new List<Task>();
 
             for (int i = 0; i < 22; i++)
             {
@@ -153,11 +153,11 @@ namespace Wait_free
                 if (i % 3 == 0)
                 {
                     int count = i;
-                    Task.Run(() =>
+                    taskReader.Add(Task.Run(() =>
                     {
                         Console.WriteLine("read from {0} thread on {1} interation: ({2})", id, count,
                             string.Join(", ", bsw.Scan(id)));
-                    });
+                    }));
                 }
 
                 if (i % 2 == 1)
@@ -165,8 +165,9 @@ namespace Wait_free
                     Task.WaitAll(tasks);
                 }
             }
-
+            Task.WaitAll(taskReader.ToArray());
             bsw.Print();
+
         }
     }
 }

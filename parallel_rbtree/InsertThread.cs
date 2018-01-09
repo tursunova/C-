@@ -41,13 +41,8 @@ namespace parallel_rbtree
             {
                 Console.WriteLine("Thread " + Id + " add " + value);
 
-                try
-                {
-                    _rbTree.Insert(value);
-                }
-                catch (Exception e) //catch (NullPointerException e)
-                {
-                }
+                _rbTree.Insert(value);
+                
             }
         }
     }

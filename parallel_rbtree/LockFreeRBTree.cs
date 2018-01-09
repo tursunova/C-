@@ -17,7 +17,7 @@ namespace parallel_rbtree
         {
             if (Root == null)
             {
-                return int.MinValue;
+                return null;
             }
             LockFreeRbNode temp = Root;
             while (temp != null && temp.Value >= 0)
@@ -120,7 +120,7 @@ namespace parallel_rbtree
             {
                 parent.Flag.Set(false);
                 return false;
-            }
+            }   
             if (x == x.Parent.Left)
             {
                 uncle = x.Parent.Right;
@@ -141,9 +141,11 @@ namespace parallel_rbtree
         {
             LockFreeRbNode temp, parent, uncle = null, gradparent = null;
             parent = x.Parent;
-            List<LockFreeRbNode> localArea = new List<LockFreeRbNode>();
-            localArea.Add(x);
-            localArea.Add(parent);
+            List<LockFreeRbNode> localArea = new List<LockFreeRbNode>
+            {
+                x,
+                parent
+            };
 
             if (parent != null)
             {
@@ -365,13 +367,13 @@ namespace parallel_rbtree
         }
 
 
-        public int Getheight(LockFreeRbNode root)
+        public int GetHeight(LockFreeRbNode root)
         {
             if (root == null)
             {
                 return 0;
             }
-            return Math.Max(Getheight(root.Left), Getheight(root.Right)) + 1;
+            return Math.Max(GetHeight(root.Left), GetHeight(root.Right)) + 1;
         }
 
 
